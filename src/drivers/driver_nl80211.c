@@ -6860,7 +6860,9 @@ static int wpa_driver_nl80211_sta_add(void *priv,
 			   params->listen_interval);
 		NLA_PUT_U16(msg, NL80211_ATTR_STA_LISTEN_INTERVAL,
 			    params->listen_interval);
-	} else if (params->aid && (params->flags & WPA_STA_TDLS_PEER)) {
+	}
+#ifndef BOARD_WIFI_SKIP_CAPABILITIES	
+	else if (params->aid && (params->flags & WPA_STA_TDLS_PEER)) {
 		wpa_printf(MSG_DEBUG, "  * peer_aid=%u", params->aid);
 		NLA_PUT_U16(msg, NL80211_ATTR_PEER_AID, params->aid);
 	}
@@ -6891,7 +6893,7 @@ static int wpa_driver_nl80211_sta_add(void *priv,
 		NLA_PUT(msg, NL80211_ATTR_STA_EXT_CAPABILITY,
 			params->ext_capab_len, params->ext_capab);
 	}
-
+#endif
 	if (params->supp_channels) {
 		wpa_hexdump(MSG_DEBUG, "  * supported channels",
 			    params->supp_channels, params->supp_channels_len);
