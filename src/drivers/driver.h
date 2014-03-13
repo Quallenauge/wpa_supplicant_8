@@ -3314,6 +3314,8 @@ enum wpa_event_type {
 	 */
 	EVENT_SCAN_STARTED,
 
+	EVENT_START_ROAMING,
+	
 	/**
 	 * EVENT_AVOID_FREQUENCIES - Received avoid frequency range
 	 *

@@ -1331,6 +1331,20 @@ static int wpas_select_network_from_last_scan(struct wpa_supplicant *wpa_s,
 		} else {
 			int timeout_sec = wpa_s->scan_interval;
 			int timeout_usec = 0;
+			if (wpa_s->roaming && (wpa_s->num_roaming_scans > 1)) {
+				wpa_dbg(wpa_s, MSG_DEBUG, "No roaming candidate"
+					" found. Attempt another scan");
+				wpa_s->num_roaming_scans--;
+				wpa_supplicant_req_new_scan(wpa_s, 0, 0);
+				return 0;
+			} else if (wpa_s->roaming) {
+				wpa_dbg(wpa_s, MSG_DEBUG,
+					"No roaming candidate found "
+					"after multiple scans. Disconnect");
+				wpa_supplicant_deauthenticate(wpa_s,
+					      WLAN_REASON_DEAUTH_LEAVING);
+				/* Fall through so periodic scan won't stop */
+			}			
 #ifdef CONFIG_P2P
 			if (wpas_p2p_scan_no_go_seen(wpa_s) == 1)
 				return 0;
@@ -3173,6 +3187,13 @@ void wpa_supplicant_event(void *ctx, enum wpa_event_type event,
 			data->signal_change.current_noise,
 			data->signal_change.current_txrate);
 		break;
+	case EVENT_START_ROAMING:
+		if (!is_zero_ether_addr(wpa_s->bssid)) {
+			wpa_s->roaming = 1;
+			wpa_s->num_roaming_scans = 2;
+			wpa_supplicant_req_scan(wpa_s, 0, 0);
+		}
+		break;		
 	case EVENT_INTERFACE_ENABLED:
 		wpa_dbg(wpa_s, MSG_DEBUG, "Interface was enabled");
 		if (wpa_s->wpa_state == WPA_INTERFACE_DISABLED) {
