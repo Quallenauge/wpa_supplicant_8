@@ -3249,6 +3249,63 @@ enum nl80211_tx_power_setting {
 };
 
 /**
+ * enum nl80211_wowlan_packet_pattern_attr - WoWLAN packet pattern attribute
+ * @__NL80211_WOWLAN_PKTPAT_INVALID: invalid number for nested attribute
+ * @NL80211_WOWLAN_PKTPAT_PATTERN: the pattern, values where the mask has
+ *	a zero bit are ignored
+ * @NL80211_WOWLAN_PKTPAT_MASK: pattern mask, must be long enough to have
+ *	a bit for each byte in the pattern. The lowest-order bit corresponds
+ *	to the first byte of the pattern, but the bytes of the pattern are
+ *	in a little-endian-like format, i.e. the 9th byte of the pattern
+ *	corresponds to the lowest-order bit in the second byte of the mask.
+ *	For example: The match 00:xx:00:00:xx:00:00:00:00:xx:xx:xx (where
+ *	xx indicates "don't care") would be represented by a pattern of
+ *	twelve zero bytes, and a mask of "0xed,0x01".
+ *	Note that the pattern matching is done as though frames were not
+ *	802.11 frames but 802.3 frames, i.e. the frame is fully unpacked
+ *	first (including SNAP header unpacking) and then matched.
+ * @NL80211_WOWLAN_PKTPAT_OFFSET: packet offset, pattern is matched after
+ *	these fixed number of bytes of received packet
+ *
+ * @NL80211_WOWLAN_ACTION: pattern action which can be either to wake up
+ *      on this pattern or drop it and avoid wake up. This can be used to
+ *      specify an excpetion/blacklist pattern that shouldn't cause wakeup
+ *      despite the packet matching another wowlan pattern. For example:
+ *      configure all IPv4 multicast to wake up except certain type of packets
+ *      This can be either NL80211_WOWLAN_ACTION_ALLOW or DROP.
+ *      If this attribute is missing the default would be ALLOW.
+ * @NUM_NL80211_WOWLAN_PKTPAT: number of attributes
+ * @MAX_NL80211_WOWLAN_PKTPAT: max attribute number
+ */
+enum nl80211_wowlan_packet_pattern_attr {
+	__NL80211_WOWLAN_PKTPAT_INVALID,
+	NL80211_WOWLAN_PKTPAT_MASK,
+	NL80211_WOWLAN_PKTPAT_PATTERN,
+	NL80211_WOWLAN_PKTPAT_OFFSET,
+	NL80211_WOWLAN_PKTPAT_ACTION = NL80211_WOWLAN_PKTPAT_PATTERN + 10,
+
+	NUM_NL80211_WOWLAN_PKTPAT,
+	MAX_NL80211_WOWLAN_PKTPAT = NUM_NL80211_WOWLAN_PKTPAT - 1,
+};
+
+/**
+ * enum nl80211_wowlan_action - WoWLAN packet pattern action
+ * @NL80211_WOWLAN_ACTION_ALLOW: this pattern should wake up the host
+ * and the packet should be forwarded to the host unless this packet
+ * matches a DROP rule.
+ * @NL80211_WOWLAN_ACTION_DROP: a packet containing this pattern shouldn't
+ * wake up the host.
+ */
+enum nl80211_wowlan_action {
+	NL80211_WOWLAN_ACTION_ALLOW,
+	NL80211_WOWLAN_ACTION_DROP,
+
+	/* keep last */
+	NUM_NL80211_WOWLAN_ACTION,
+	MAX_NL80211_WOWLAN_ACTION = NUM_NL80211_WOWLAN_ACTION - 1,
+};
+
+/**
  * enum nl80211_packet_pattern_attr - packet pattern attribute
  * @__NL80211_PKTPAT_INVALID: invalid number for nested attribute
  * @NL80211_PKTPAT_PATTERN: the pattern, values where the mask has
