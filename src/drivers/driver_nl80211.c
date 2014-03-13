@@ -3313,6 +3313,8 @@ static void wiphy_info_feature_flags(struct wiphy_info_data *info,
 
 	if (flags & NL80211_FEATURE_NEED_OBSS_SCAN)
 		capa->flags |= WPA_DRIVER_FLAGS_OBSS_SCAN;
+	if (flags & NL80211_FEATURE_SCHED_SCAN_INTERVALS)
+		capa->sched_scan_intervals_supported = 1;
 }
 
 
@@ -4559,6 +4561,7 @@ static int wpa_driver_nl80211_scan(struct i802_bss *bss,
 	struct nl_msg *msg = NULL;
 
 	wpa_dbg(drv->ctx, MSG_DEBUG, "nl80211: scan request");
+	
 	drv->scan_for_auth = 0;
 
 	msg = nl80211_scan_common(drv, NL80211_CMD_TRIGGER_SCAN, params,
