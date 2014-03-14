@@ -11491,7 +11491,7 @@ static int wpa_driver_nl80211_driver_cmd_android(void *priv, char *cmd, char *bu
 	} else if( os_strcasecmp(cmd, "RXFILTER-STOP") == 0 ) {
 		return nl80211_set_wowlan_triggers(bss, 0);
 	} else {
-		wpa_driver_nl80211_driver_cmd_android(priv, cmd, buf, buf_len);
+		wpa_driver_nl80211_driver_cmd(priv, cmd, buf, buf_len);
 	}
 
 	return ret;
